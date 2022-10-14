@@ -48,9 +48,9 @@ async def broadcast(dialog, text):
             None
     """
    chat = dialog.chat.id
-   if chat not in GCAST_BLACKLIST:
+   alby = if chat not in GCAST_BLACKLIST:
     res = await app.send_message(
-        chat,
+        alby,
         text
     )
     return res if res else None
