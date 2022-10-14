@@ -1,26 +1,14 @@
-import asyncio
+""" broadcast plugin """
 
-from pyrogram.errors import FloodWait
 from pyrogram.types import Message
-from requests import get
-
-from main.userbot.modules.plugins.gcast import *
+from pyrogram.enums import ChatType
+from pyrogram.errors import (
+    PeerIdInvalid,
+    ChatWriteForbidden
+)
 
 from main import app, gen
 
-
-
-DEVS = [
-    844432220, #risman
-    1883676087, #adam
-    1738637033, #td
-    1423479724, #toni
-    1784606556, #grey
-    1441342342,
-    5089916692,
-    2014359828,
-    1337194042
-]
 
 while 0 < 6:
     _GCAST_BLACKLIST = get(
@@ -34,131 +22,6 @@ while 0 < 6:
     GCAST_BLACKLIST = _GCAST_BLACKLIST.json()
     break
 
-del _GCAST_BLACKLIST
-
-
-@app.on_message(
-    gen(
-        commands=["gcast", "gikes"]
-    )
-)
-async def ucup_gcast(_, message: Message):
-    if not message.reply_to_message:
-        pass
-    else:
-        msg = message.reply_to_message
-        yanto = await message.reply_text("`Penyiaran Global!`")
-        sent = 0
-        failed = 0
-        async for dialog in app.iter_dialogs():
-            chat_type = dialog.chat.type
-            if chat_type in [
-                "supergroup",
-                "group",
-            ]:
-                chat = dialog.chat.id
-                if chat not in GCAST_BLACKLIST:
-                    try:
-                        await msg.copy(chat)
-                        sent = sent + 1
-                        await asyncio.sleep(0.1)
-                    except:
-                        failed = failed + 1
-                        await asyncio.sleep(0.1)
-
-        return await yanto.edit_text(
-            f"✅ Selesai {sent} obrolan, gagal {failed} obrolan"
-        )
-        return 
-    if len(message.command) < 2:
-        await message.reply_text(
-             "**Penggunaan**:\n.gcast <text> atau balas pesan"
-        )
-        return
-    yanto = await message.reply_text("`Penyiaran Global!`")
-    panjul = message.text.split(None, 1)[1]
-    sent = 0
-    failed = 0
-    async for dialog in app.iter_dialogs():
-        chat_type = dialog.chat.type
-        if chat_type in [
-             "supergroup",
-             "group",
-        ]:
-             chat = dialog.chat.id
-             if chat not in GCAST_BLACKLIST:
-                 try:
-                     await app.send_message(chat, text=panjul)
-                     sent = sent + 1
-                     await asyncio.sleep(0.1)
-                 except:
-                     failed = failed + 1
-                     await asyncio.sleep(0.1)
-                                       
-    return await yanto.edit_text(
-        f"✅ Selesai {sent} obrolan, gagal {failed} obrolan"
-    )
-
-
-@app.on_message(
-    gen(
-        commands=["gcast", "gikes"]
-    )
-)
-async def jamal_gucast(_, message: Message):
-    if not message.reply_to_message:
-        pass
-    else:
-        msg = message.reply_to_message
-        yanto = await message.reply_text("`Siaran Global untuk pengguna!`")
-        sent = 0
-        failed = 0
-        async for dialog in app.iter_dialogs():
-            chat_type = dialog.chat.type
-            if chat_type in [
-                "private",
-            ]:
-                chat = dialog.chat.id
-                if chat not in GCAST_BLACKLIST:
-                    try:
-                        await msg.copy(chat)
-                        sent = sent + 1
-                        await asyncio.sleep(0.1)
-                    except:
-                        failed = failed + 1
-                        await asyncio.sleep(0.1)
-
-                await yanto.edit_text(
-                    f"✅ **Gucast Berhasil\nKirim ke:** {sent} **Obrolan\n Gagal mengirim :** {failed} **Obrolan**"
-                )
-        return 
-    if len(message.command) < 2:
-        await message.reply_text(
-             "**Penggunaan**:\n.gucast <text> atau balas pesan"
-        )
-        return
-    yanto = await message.reply_text("`Siaran Global untuk pengguna!`")
-    panjul = message.text.split(None, 1)[1]
-    sent = 0
-    failed = 0
-    async for dialog in app.iter_dialogs():
-        chat_type = dialog.chat.type
-        if chat_type in [
-             "private",
-        ]:
-             chat = dialog.chat.id
-             if chat not in GCAST_BLACKLIST:
-                 try:
-                     await app.send_message(chat, text=panjul)
-                     sent = sent + 1
-                     await asyncio.sleep(0.1)
-                 except:
-                     failed = failed + 1
-                     await asyncio.sleep(0.1)
-                                        
-                 await yanto.edit_text(
-                    f"✅ **Gucast Berhasil\nKirim ke:** {sent} **Obrolan\n Gagal mengirim :** {failed} **Obrolan**"
-                )
 
 app.CMD_HELP.update(
     {"gcast": (
@@ -169,3 +32,71 @@ app.CMD_HELP.update(
         )
     }
 )
+
+
+
+async def broadcast(dialog, text):
+    """
+        name::
+            broadcast
+
+        parameters::
+            dialog (int): dialog object
+            text (str): text message to be sent to users
+
+        returns::
+            None
+    """
+   chat = dialog.chat.id
+   if chat not in GCAST_BLACKLIST:
+    res = await app.send_message(
+        chat,
+        text
+    )
+    return res if res else None
+
+
+@app.on_message(
+    gen(
+        commands=["gcast", "gikes"]
+    )
+)
+async def broadcast_handler(_, m: Message):
+    """
+        name::
+            broadcast_handler
+
+        parameters::
+            client (pyrogram.Client): pyrogram client
+            message (pyrogram.types.Message): pyrogram message
+
+        returns::
+            None
+    """
+    try:
+        args = app.GetArgs()
+        groups = 0
+        text = args.text.split(None, 1)[1]
+
+        if not args:
+            return await app.send_edit(
+                "Give me some broadcasting message.",
+                text_type=["mono"],
+                delme=3
+            )
+
+        try:
+
+            await app.send_edit("Broadcasting messages . . .", text_type=["mono"])
+            async for x in app.get_dialogs():
+                if x.chat.type in (ChatType.SUPERGROUP, ChatType.GROUP):
+                    done = await broadcast(x, text)
+                    if done:
+                        groups += 1
+
+        except (PeerIdInvalid, ChatWriteForbidden):
+            pass
+
+        await app.send_edit(f"Broadcasted messages to {groups} groups.", delme=4)
+    except Exception as e:
+        await app.error(e)
