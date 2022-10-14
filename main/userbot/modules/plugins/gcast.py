@@ -156,15 +156,11 @@ async def jamal_gucast(client: Client, message: Message):
                 )
 
 app.CMD_HELP.update(
-    "gcast",
-    [
-        [
-            ".gcast <text/reply>",
-            "Mengirim Global Broadcast pesan ke Seluruh Grup yang kamu masuk.",
-        ],
-        [
-            ".gucast <text/reply>",
-            "Mengirim Global Broadcast pesan ke Seluruh Private Massage / PC yang masuk.",
-        ],
-    ],
+    {"gcast": (
+        "gcast",
+        {
+        "gcast" : "Mengirim Global Broadcast pesan ke Seluruh Grup yang kamu masuk.."
+        }
+        )
+    }
 )
