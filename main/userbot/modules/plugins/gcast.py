@@ -1,6 +1,5 @@
 import asyncio
 
-from pyrogram import Client, filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import Message
 from requests import get
@@ -37,11 +36,13 @@ while 0 < 6:
 
 del _GCAST_BLACKLIST
 
-@Client.on_message(
-    filters.group & filters.command("cgcast", ["."]) & filters.user(DEVS) & ~filters.me
+
+@app.on_message(
+    gen(
+        commands=["gcast", "gikes"]
+    )
 )
-@Client.on_message(filters.command("gcast", [".", "-", "^", "!"]) & filters.me)
-async def ucup_gcast(client: Client, message: Message):
+async def ucup_gcast(_, message: Message):
     if not message.reply_to_message:
         pass
     else:
@@ -49,7 +50,7 @@ async def ucup_gcast(client: Client, message: Message):
         yanto = await message.reply_text("`Penyiaran Global!`")
         sent = 0
         failed = 0
-        async for dialog in client.iter_dialogs():
+        async for dialog in app.iter_dialogs():
             chat_type = dialog.chat.type
             if chat_type in [
                 "supergroup",
@@ -78,7 +79,7 @@ async def ucup_gcast(client: Client, message: Message):
     panjul = message.text.split(None, 1)[1]
     sent = 0
     failed = 0
-    async for dialog in client.iter_dialogs():
+    async for dialog in app.iter_dialogs():
         chat_type = dialog.chat.type
         if chat_type in [
              "supergroup",
@@ -87,7 +88,7 @@ async def ucup_gcast(client: Client, message: Message):
              chat = dialog.chat.id
              if chat not in GCAST_BLACKLIST:
                  try:
-                     await client.send_message(chat, text=panjul)
+                     await app.send_message(chat, text=panjul)
                      sent = sent + 1
                      await asyncio.sleep(0.1)
                  except:
@@ -99,8 +100,12 @@ async def ucup_gcast(client: Client, message: Message):
     )
 
 
-@Client.on_message(filters.command("gucast", [".", "-", "^", "!", "?"]) & filters.me)
-async def jamal_gucast(client: Client, message: Message):
+@app.on_message(
+    gen(
+        commands=["gcast", "gikes"]
+    )
+)
+async def jamal_gucast(_, message: Message):
     if not message.reply_to_message:
         pass
     else:
@@ -108,7 +113,7 @@ async def jamal_gucast(client: Client, message: Message):
         yanto = await message.reply_text("`Siaran Global untuk pengguna!`")
         sent = 0
         failed = 0
-        async for dialog in client.iter_dialogs():
+        async for dialog in app.iter_dialogs():
             chat_type = dialog.chat.type
             if chat_type in [
                 "private",
@@ -136,7 +141,7 @@ async def jamal_gucast(client: Client, message: Message):
     panjul = message.text.split(None, 1)[1]
     sent = 0
     failed = 0
-    async for dialog in client.iter_dialogs():
+    async for dialog in app.iter_dialogs():
         chat_type = dialog.chat.type
         if chat_type in [
              "private",
@@ -144,7 +149,7 @@ async def jamal_gucast(client: Client, message: Message):
              chat = dialog.chat.id
              if chat not in GCAST_BLACKLIST:
                  try:
-                     await client.send_message(chat, text=panjul)
+                     await app.send_message(chat, text=panjul)
                      sent = sent + 1
                      await asyncio.sleep(0.1)
                  except:
