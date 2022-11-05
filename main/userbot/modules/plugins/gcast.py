@@ -18,9 +18,7 @@ app.CMD_HELP.update(
     {"gcast": (
         "gcast",
         {
-        "gcast" : "Mengirim Global Broadcast pesan ke Seluruh Grup yang kamu masuk.."
-        }
-        {
+        "gcast" : "Mengirim Global Broadcast pesan ke Seluruh Grup yang kamu masuk..",
         "gucast" : "Mengirim Global Broadcast pesan ke Seluruh pesan pribadi yang masuk.."
         }
         )
