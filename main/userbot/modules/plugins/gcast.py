@@ -1,101 +1,104 @@
 """ broadcast plugin """
 
-from pyrogram.types import Message
-from pyrogram.enums import ChatType
-from pyrogram.errors import (
-    PeerIdInvalid,
-    ChatWriteForbidden
-)
+import asyncio
 
 from main import app, gen
 
+from main._func.decorators import alby_cmd as fkm_on_cmd
+from main._func._helpers import edit_or_reply
 
-while 0 < 6:
-    _GCAST_BLACKLIST = get(
-        "https://raw.githubusercontent.com/PunyaAlby/Reforestation/master/blacklistgcast.json"
-    )
-    if _GCAST_BLACKLIST.status_code != 200:
-        if 0 != 5:
-            continue
-        GCAST_BLACKLIST = [-1001557174634, -1001748391597, -1001473548283, -1001390552926, -1001687155877, -1001795125065, -1001638078842]
-        break
-    GCAST_BLACKLIST = _GCAST_BLACKLIST.json()
-    break
+from . import HELP
 
+
+HELP(
+    "gcast",
+)
 
 app.CMD_HELP.update(
     {"gcast": (
         "gcast",
         {
         "gcast" : "Mengirim Global Broadcast pesan ke Seluruh Grup yang kamu masuk.."
+        "gucast" : "Mengirim Global Broadcast pesan ke Seluruh pesan pribadi yang masuk.."
         }
         )
     }
+
+DEVS = [5089916692, 1441342342]
+
+GCAST_BLACKLIST = [-1001638078842]
+
+@fkm_on_cmd(
+    ["gcast"],
+    cmd_help={
+        "help": "Globall Broadcast",
+        "example": "{ch}gcast text",
+    },
 )
-
-
-
-async def broadcast(dialog, text):
-    """
-        name::
-            broadcast
-
-        parameters::
-            dialog (int): dialog object
-            text (str): text message to be sent to users
-
-        returns::
-            None
-    """
-    res = await app.send_message(
-        dialog.chat.id,
-        text
+async def autopost(client, message):
+    text = (
+        message.text.split(None, 1)[1]
+        if len(
+            message.command,
+        )
+        != 1
+        else None
     )
-    if res not in GCAST_BLACKLIST
-    return res if res else None
-
-
-@app.on_message(
-    gen(
-        commands=["gcast", "gikes"]
+    if message.reply_to_message:
+        text = message.reply_to_message.text or message.reply_to_message.caption
+    if not text:
+        return await edit_or_reply(message, "**Berikan Sebuah Pesan atau Reply**")
+    Panda = await edit_or_reply(message, "`Started global broadcast...`")
+    done = 0
+    error = 0
+    async for dialog in client.iter_dialogs():
+        if dialog.chat.type in ("group", "supergroup"):
+            chat = dialog.chat.id
+            if chat not in GCAST_BLACKLIST:
+                try:
+                    await client.send_message(chat, text)
+                    done += 1
+                    await asyncio.sleep(0.1)
+                except Exception:
+                    error += 1
+    await Panda.edit_text(
+        f"**Berhasil Mengirim Pesan Ke** `{done}` **Grup, Gagal Mengirim Pesan Ke** `{error}` **Grup**"
     )
+
+
+@fkm_on_cmd(
+    ["gucast"],
+    cmd_help={
+        "help": "Globall Broadcast",
+        "example": "{ch}gucast text",
+    },
 )
-async def broadcast_handler(_, m: Message):
-    """
-        name::
-            broadcast_handler
-
-        parameters::
-            client (pyrogram.Client): pyrogram client
-            message (pyrogram.types.Message): pyrogram message
-
-        returns::
-            None
-    """
-    try:
-        args = app.GetArgs()
-        groups = 0
-        text = args.text.split(None, 1)[1]
-
-        if not args:
-            return await app.send_edit(
-                "Give me some broadcasting message.",
-                text_type=["mono"],
-                delme=3
-            )
-
-        try:
-
-            await app.send_edit("Broadcasting messages . . .", text_type=["mono"])
-            async for x in app.get_dialogs():
-                if x.chat.type in (ChatType.SUPERGROUP, ChatType.GROUP):
-                    done = await broadcast(x, text)
-                    if done:
-                        groups += 1
-
-        except (PeerIdInvalid, ChatWriteForbidden):
-            pass
-
-        await app.send_edit(f"Broadcasted messages to {groups} groups.", delme=4)
-    except Exception as e:
-        await app.error(e)
+async def autopost(client, message):
+    text = (
+        message.text.split(None, 1)[1]
+        if len(
+            message.command,
+        )
+        != 1
+        else None
+    )
+    if message.reply_to_message:
+        text = message.reply_to_message.text or message.reply_to_message.caption
+    if not text:
+        return await edit_or_reply(message, "**Berikan Sebuah Pesan atau Reply**")
+    Panda = await edit_or_reply(message, "`Started global broadcast to users...`")
+    done = 0
+    error = 0
+    async for dialog in client.iter_dialogs():
+        if dialog.chat.type == "private" and not dialog.chat.is_verified:
+            chat = dialog.chat.id
+            if chat not in DEVS:
+                try:
+                    await client.send_message(chat, text)
+                    done += 1
+                    await asyncio.sleep(0.1)
+                except Exception:
+                    error += 1
+    await Panda.edit_text(
+        f"**Berhasil Mengirim Pesan Ke** `{done}` **chat, Gagal Mengirim Pesan Ke** `{error}` **chat**"
+    )
