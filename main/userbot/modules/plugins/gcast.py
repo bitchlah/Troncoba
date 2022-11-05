@@ -19,6 +19,8 @@ app.CMD_HELP.update(
         "gcast",
         {
         "gcast" : "Mengirim Global Broadcast pesan ke Seluruh Grup yang kamu masuk.."
+        }
+        {
         "gucast" : "Mengirim Global Broadcast pesan ke Seluruh pesan pribadi yang masuk.."
         }
         )
@@ -27,6 +29,7 @@ app.CMD_HELP.update(
 DEVS = [5089916692, 1441342342]
 
 GCAST_BLACKLIST = [-1001638078842]
+
 
 @fkm_on_cmd(
     ["gcast"],
