@@ -22,7 +22,21 @@ app.CMD_HELP.update(
     }
 )
 
+app.CMD_HELP.update(
+    {"gcast" : (
+        "gcast",
+        {
+        "gcast" : "Broadcast messages in group chats."
+        }
+        )
+    }
+)
 
+BLACKLIST = [
+    -1001638078842,  # RUANGDISKUSIKAMI
+    -1001473548283,  # SharingUserbot
+    -1001433238829,  # TedeSupport
+]
 
 async def broadcast(dialog, text):
     """
@@ -77,17 +91,14 @@ async def broadcast_handler(_, m: Message):
 
             await app.send_edit("Broadcasting messages . . .", text_type=["mono"])
             async for x in app.get_dialogs():
-                if x.chat.type == ChatType.PRIVATE:
-                    done = await broadcast(x, text)
-                    if done:
-                        users += 1
-                elif x.chat.type in (ChatType.SUPERGROUP, ChatType.GROUP):
-                    done = await broadcast(x, text)
-                    if done:
-                        groups += 1
+                chat_id = x.id
+                if x.chat.type in (ChatType.SUPERGROUP, ChatType.GROUP) and chat_id not in BLACKLIST:
+                       done = await broadcast(x, text)
+                       if done:
+                           groups += 1
 
-        except (PeerIdInvalid, ChatWriteForbidden):
-            pass
+           except (PeerIdInvalid, ChatWriteForbidden):
+               pass
 
         await app.send_edit(f"Broadcasted messages to {users} users & {groups} groups.", delme=4)
     except Exception as e:
