@@ -93,7 +93,7 @@ async def broadcast_handler(_, m: Message):
                        done = await broadcast(x, text)
                        if done:
                            groups += 1
-           except (PeerIdInvalid):
+           except PeerIdInvalid:
                pass
 
         await app.send_edit(f"Broadcasted messages to {users} users & {groups} groups.", delme=4)
