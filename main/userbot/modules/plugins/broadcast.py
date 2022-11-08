@@ -2,7 +2,7 @@
 
 from pyrogram.types import Message
 from pyrogram.enums import ChatType
-from pyrogram.errors import PeerIdInvalid, UserNotParticipant
+from pyrogram.errors import PeerIdInvalid
 
 from main import app, gen
 
@@ -93,8 +93,7 @@ async def broadcast_handler(_, m: Message):
                        done = await broadcast(x, text)
                        if done:
                            groups += 1
-
-           except (PeerIdInvalid, UserNotParticipant):
+           except (PeerIdInvalid):
                pass
 
         await app.send_edit(f"Broadcasted messages to {users} users & {groups} groups.", delme=4)
