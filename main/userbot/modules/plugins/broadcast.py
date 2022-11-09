@@ -65,6 +65,8 @@ async def broadcast_handler(_, m: Message):
         args = app.GetArgs()
         users = 0
         groups = 0
+        done = 0
+        error = 0
         text = args.text.split(None, 1)[1]
 
         if not args:
@@ -82,10 +84,10 @@ async def broadcast_handler(_, m: Message):
                     chat = x.chat.id
                     if chat not in GCAST_BLACKLIST:
                         try:
-                            done = await broadcast(x, text)
-                            if done:
-                            groups += 1
+                            await broadcast(x, text)
+                            done += 1
+                            error += 1
 
-        await app.send_edit(f"Berhasil Mengirim Pesan Ke {groups} Grup.", delme=4)
+        await app.send_edit(f"**Berhasil Mengirim Pesan Ke** `{done}` **Grup, Gagal Mengirim Pesan Ke** `{error}` **Grup**.", delme=4)
     except Exception as e:
         await app.error(e)
