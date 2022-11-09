@@ -82,10 +82,10 @@ async def broadcast_handler(_, m: Message):
                     chat = x.chat.id
                     if chat not in GCAST_BLACKLIST:
                         try:
-                            await broadcast(x, text)
-                            done += 1
-                            error += 1
+                            done = await broadcast(x, text)
+                            if done:
+                            groups += 1
 
-        await app.send_edit(f"Berhasil Mengirim Pesan Ke {done} Grup, Gagal Mengirim Pesan Ke {error} Grup.", delme=4)
+        await app.send_edit(f"Berhasil Mengirim Pesan Ke {groups} Grup.", delme=4)
     except Exception as e:
         await app.error(e)
