@@ -84,8 +84,7 @@ async def broadcast_handler(_, m: Message):
                         try:
                             await broadcast(x, text)
                             done += 1
-                    except Exception:
-                         error += 1
+                            error += 1
 
         await app.send_edit(f"Berhasil Mengirim Pesan Ke** `{done}` **Grup, Gagal Mengirim Pesan Ke** `{error}` **Grup**.", delme=4)
     except Exception as e:
