@@ -10,16 +10,6 @@ from main import app, gen
 
 
 app.CMD_HELP.update(
-    {"broadcast" : (
-        "broadcast",
-        {
-        "broadcast" : "Broadcast messages in user chats, group chats."
-        }
-        )
-    }
-)
-
-app.CMD_HELP.update(
     {"gcast" : (
         "gcast",
         {
@@ -29,7 +19,7 @@ app.CMD_HELP.update(
     }
 )
 
-BLACKLIST = [
+GCAST_BLACKLIST = [
     -1001638078842,  # RUANGDISKUSIKAMI
     -1001473548283,  # SharingUserbot
     -1001433238829,  # TedeSupport
@@ -88,14 +78,15 @@ async def broadcast_handler(_, m: Message):
 
             await app.send_edit("Broadcasting messages . . .", text_type=["mono"])
             async for x in app.get_dialogs():
-                chat_id = x.id
-                if x.chat.type in (ChatType.SUPERGROUP, ChatType.GROUP) and chat_id not in BLACKLIST:
-                       done = await broadcast(x, text)
-                       if done:
-                           groups += 1
-           except PeerIdInvalid:
-               pass
+                if x.chat.type in (ChatType.SUPERGROUP, ChatType.GROUP):
+                    chat = x.chat.id
+                    if chat not in GCAST_BLACKLIST:
+                        try:
+                            await broadcast(x, text)
+                            done += 1
+                    except Exception:
+                         error += 1
 
-        await app.send_edit(f"Broadcasted messages to {users} users & {groups} groups.", delme=4)
+        await app.send_edit(f"Berhasil Mengirim Pesan Ke** `{done}` **Grup, Gagal Mengirim Pesan Ke** `{error}` **Grup**.", delme=4)
     except Exception as e:
         await app.error(e)
